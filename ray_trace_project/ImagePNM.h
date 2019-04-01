@@ -5,7 +5,7 @@ class ImagePNM
 {
 public:
 	ImagePNM() { image = NULL; width = 0 ; height = 0; };
-	~ImagePNM();
+	~ImagePNM() {}
 
 	void readPNM(char *fileName);
 	void createPNM(char *fileName);
