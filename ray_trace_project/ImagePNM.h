@@ -1,16 +1,23 @@
+
 #include "Image.h"
 #include <cstdio>
 
 class ImagePNM
 {
 public:
-	ImagePNM() { image = NULL; width = 0 ; height = 0; };
-	~ImagePNM() {}
+	ImagePNM() { 
+		image = NULL; 
+		width = 0 ; 
+		height = 0; 
+	};
 
-	void readPNM(char *fileName);
-	void createPNM(char *fileName);
+	~ImagePNM() { ; }
+
+	void readPNM(const char *fileName);
+	void createPNM(const char *fileName);
 
 	Image *returnImage() { return image; }
+
 	void receiveImage(Image *img) {
 		image = img;
 		width = img->getWidth();
@@ -25,4 +32,6 @@ private:
 	int width;
 	int height;
 };
+
+
 

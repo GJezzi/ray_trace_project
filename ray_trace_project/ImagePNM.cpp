@@ -1,12 +1,13 @@
 #include "ImagePNM.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #define BUFF_SIZE 500
 
 using namespace std;
 
-void ImagePNM::readPNM(char *fileName) {
+void ImagePNM::readPNM(const char* fileName) {
 	cout << "Reading image " << fileName << "\n";
 
 	ifstream input(fileName, ios::in);
@@ -51,7 +52,7 @@ void ImagePNM::readPNM(char *fileName) {
 	cout << "Successful file reading. \n";
 }
 
-void ImagePNM::createPNM(char *fileName) {
+void ImagePNM::createPNM(const char *fileName) {
 	ofstream file(fileName, ios::out | ios::binary);
 
 	file << "P3" << endl;

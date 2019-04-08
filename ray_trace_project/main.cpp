@@ -8,6 +8,7 @@
 
 using namespace std;
 
+//Image Resolution
 #define IMG_HEIGHT 200
 #define IMG_WIDTH 200
 
@@ -41,7 +42,7 @@ struct Sphere
 };
 
 
-bool sphereInterception(Ray ray, Sphere sphere, Vec3 &pi, Vec3 n, Color &color) {
+bool sphereInterception(Ray ray, Sphere sphere, Vec3 &pi, Vec3 &n, Color &color) {
 	float A, B, C;
 
 	Vec3 rayOrigin = ray.rayOrigin;
@@ -102,7 +103,9 @@ bool sphereInterception(Ray ray, Sphere sphere, Vec3 &pi, Vec3 n, Color &color) 
 	return true;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+	locale::global(locale("portuguese"));
 
 	//Defines virtual observer
 	Vec3 eye;
@@ -167,9 +170,97 @@ int main() {
 	sphereColor.b = 0;
 
 	spheres[2].color = sphereColor;
+	
+	Color backgroundColor;
+	backgroundColor.r = 255;
+	backgroundColor.g = 255;
+	backgroundColor.b = 255;
 
+	Pixel** image = new Pixel*[IMG_HEIGHT];
 
+	for (int i = 0; i < IMG_HEIGHT; i++)
+		image[i] = new Pixel[IMG_WIDTH];
 
+	image[2][2];
+	image[IMG_HEIGHT][IMG_WIDTH];
+
+	Ray ray;
+	Vec3 intersectionPoint, normalPoint;
+	Color objColor;
+
+	for (int i = 0; i < height; i++)
+		for (int j = 0; j < width; j++)
+		{
+			image[i][j] = backgroundColor;
+			int rgb = ((int)backgroundColor.b << 16) | ((int)backgroundColor.g << 8) | (int)backgroundColor.r;
+			pixels->setRGB(i, j, rgb);
+
+		}
+
+	for (int i = 0; i < height; i++) //percorre as linhas - y
+	{
+		for (int j = 0; j < width; j++) //percorre as colunas - x
+		{
+			Vec3 gridPoint;
+			gridPoint.y = ortho.yf - i * cellY;
+			gridPoint.x = ortho.xi + j * cellX;
+			gridPoint.z = 0.0;
+
+			Ray ray;
+			//Ponto de origem
+			ray.rayOrigin.x = eye.x;
+			ray.rayOrigin.y = eye.y;
+			ray.rayOrigin.z = eye.z;
+
+			//Vetor direção
+			ray.rayEnd.x = gridPoint.x - eye.x;
+			ray.rayEnd.y = gridPoint.y - eye.y;
+			ray.rayEnd.z = gridPoint.z - eye.z;
+
+			ray.rayEnd = normalize(ray.rayEnd);
+
+			//Para cada objeto da cena
+			for (int k = 0; k < spheres.size(); k++)
+			{
+				Vec3 intersectionPoint, normalPoint;
+				Color objColor;
+				//	Testa se o raio atinge o objeto, ex.:
+				bool intercepted = sphereInterception(ray, spheres[k], intersectionPoint, normalPoint, objColor);
+
+				//cout << "(" << pontoNaGrid.x << "," << pontoNaGrid.y << ") ";
+				// Se interseptou
+				if (intercepted)
+				{
+					//cout << " true! ";
+					// Calcula a cor do pixel i,j. Nesta primeira etapa, apenas colocar o rgb da esfera
+					image[i][j] = objColor;
+					int rgb = ((int)objColor.b << 16) | ((int)objColor.g << 8) | (int)objColor.r;
+					pixels->setRGB(j, i, rgb);
+					//Depois, aqui será chamado o algoritmo de iluminação
+					//corAmbiente = calculaParcelaAmbiente(corObjeto, Ia, ka);
+					//Para cada fonte de luz da cena, se o objeto atinge...
+						//corDifusa = calculaParcelaDifusa(corObjeto,pontoInterseccao,normalNoPonto,kd,posLuz,IpLuz);
+						//corEspecular = ...
+					//imagem[i][j] = corAmbiente + corDifusa + corEspecular
+				}
+				else
+				{
+					image[i][j] = backgroundColor;
+					//cout << " false ";
+				}
+
+				//cout << image[i][j].r;
+				//printf("\rx[%f]y[%f] - interceptou[%d]", pontoNaGrid.x, pontoNaGrid.y, interseptou);
+			}
+			//cout << endl;
+
+			//cout << "[" << image[i][j].r << "," << image[i][j].g << "," << image[i][j].b << "]  ";
+		}
+		//cout << endl;
+	}
+
+	imagePNM.receiveImage(pixels);
+	imagePNM.createPNM("test.ppm");
 
 	system("pause");
 	return 0;
